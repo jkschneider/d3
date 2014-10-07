@@ -9,5 +9,6 @@ import "histogram";
 import "hierarchy";
 import "pack";
 import "cluster";
+import "naivetree";
 import "tree";
 import "treemap";

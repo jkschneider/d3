@@ -7079,6 +7079,28 @@
     var children = node.children, n;
     return children && (n = children.length) ? d3_layout_clusterRight(children[n - 1]) : node;
   }
+  d3.layout.naivetree = function() {
+    var hierarchy = d3.layout.hierarchy().sort(null).value(null);
+    function naivetree(d, i) {
+      var nodes = hierarchy.call(this, d, i), root = nodes[0];
+      d3_layout_hierarchyVisitBefore(root, storeYCoordinate);
+      d3_layout_hierarchyVisitAfter(root, storeXCoordinate());
+      return nodes;
+    }
+    function storeYCoordinate(v) {
+      v.y = v.depth;
+    }
+    function storeXCoordinate() {
+      var nextPos = {};
+      return function(v) {
+        if (!v.children || v.children.length == 0) {
+          if (nextPos[v.depth] != null) v.x = nextPos[v.depth] + 2; else v.x = 0;
+          nextPos[v.depth] = v.x;
+        } else if (v.children.length == 1) v.x = v.children[0].x + 1; else if (v.children.length == 2) v.x = (v.children[0].x + v.children[1].x) / 2;
+      };
+    }
+    return d3_layout_hierarchyRebind(naivetree, hierarchy);
+  };
   d3.layout.treemap = function() {
     var hierarchy = d3.layout.hierarchy(), round = Math.round, size = [ 1, 1 ], padding = null, pad = d3_layout_treemapPadNull, sticky = false, stickies, mode = "squarify", ratio = .5 * (1 + Math.sqrt(5));
     function scale(children, k) {
