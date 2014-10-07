@@ -7080,15 +7080,12 @@
     return children && (n = children.length) ? d3_layout_clusterRight(children[n - 1]) : node;
   }
   d3.layout.naivetree = function() {
-    var hierarchy = d3.layout.hierarchy().sort(null).value(null);
+    var hierarchy = d3.layout.hierarchy().sort(null).value(null), size = [ 1, 1 ];
     function naivetree(d, i) {
       var nodes = hierarchy.call(this, d, i), root = nodes[0];
-      d3_layout_hierarchyVisitBefore(root, storeYCoordinate);
       d3_layout_hierarchyVisitAfter(root, storeXCoordinate());
+      d3_layout_hierarchyVisitBefore(root, sizeNode);
       return nodes;
-    }
-    function storeYCoordinate(v) {
-      v.y = v.depth;
     }
     function storeXCoordinate() {
       var nextPos = {};
@@ -7099,6 +7096,14 @@
         } else if (v.children.length == 1) v.x = v.children[0].x + 1; else if (v.children.length == 2) v.x = (v.children[0].x + v.children[1].x) / 2;
       };
     }
+    function sizeNode(node) {
+      node.x *= size[0];
+      node.y = node.depth * size[1];
+    }
+    naivetree.nodeSize = function(x) {
+      size = x;
+      return naivetree;
+    };
     return d3_layout_hierarchyRebind(naivetree, hierarchy);
   };
   d3.layout.treemap = function() {

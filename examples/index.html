@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .node circle {
+        fill: steelblue;
+        stroke: blue;
+        stroke-width: 3px;
+    }
+
+    .node {
+        font: 18px sans-serif;
+    }
+
+    .link {
+        fill: none;
+        stroke: #555;
+        stroke-width: 1.5px;
+    }
+
+</style>
+<body>
+<script src="../d3.js"></script>
+<script>
+
+    var width = 960,
+            height = 1000;
+
+    var tree = d3.layout.naivetree()
+            .nodeSize([50,50]);
+
+    var diagonal = d3.svg.diagonal()
+            .projection(function(d) { return [d.x, d.y]; });
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(200,200)");
+
+    d3.json("tree.json", function(error, json) {
+        var nodes = tree.nodes(json),
+                links = tree.links(nodes);
+
+        var link = svg.selectAll("path.link")
+                .data(links)
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("d", diagonal);
+
+        var node = svg.selectAll("g.node")
+                .data(nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+
+        node.append("circle")
+                .attr("r", 10)
+
+        node.append("text")
+                .attr("dy", function(d) { return d.children ? -18 : 28; })
+                .attr("text-anchor", "middle")
+                .text(function(d) { return d.name; });
+    });
+
+    d3.select(self.frameElement).style("height", height + "px");
+
+</script>
