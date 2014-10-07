@@ -8,7 +8,7 @@
     }
 
     .node {
-        font: 18px sans-serif;
+        font: 14px sans-serif;
     }
 
     .link {
@@ -22,11 +22,12 @@
 <script src="../d3.js"></script>
 <script>
 
-    var width = 960,
+    var width = 1800,
             height = 1000;
 
+    var xScale = 250;
     var tree = d3.layout.naivetree()
-            .nodeSize([50,50]);
+            .nodeSize([xScale,50]);
 
     var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.x, d.y]; });
@@ -57,9 +58,9 @@
                 .attr("r", 10)
 
         node.append("text")
-                .attr("dy", function(d) { return d.children ? -18 : 28; })
+                .attr("dy", -18)
                 .attr("text-anchor", "middle")
-                .text(function(d) { return d.name; });
+                .text(function(d) { return d.x/xScale });
     });
 
     d3.select(self.frameElement).style("height", height + "px");
